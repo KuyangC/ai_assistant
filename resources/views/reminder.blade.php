@@ -10,9 +10,7 @@
 <body class="bg-gray-50">
     <div class="flex h-screen">
         <x-sidebar />
-        <!-- Main Content -->
         <div class="flex-1 overflow-auto">
-            <!-- Header for Reminders -->
             <header class="bg-white border-b border-gray-200 px-6 py-4">
                 <div class="flex items-center justify-between">
                     <div>
@@ -34,33 +32,95 @@
                 </div>
             </header>
 
-            <!-- Reminders Content -->
             <main class="p-6">
-                <!-- Page Header with Add Button -->
+                @if (session('success'))
+                    <div class="mb-4 p-4 bg-green-100 text-green-700 rounded-lg">
+                        {{ session('success') }}
+                    </div>
+                @endif
+
                 <div class="flex items-center justify-between mb-6">
                     <h2 class="text-xl font-semibold text-gray-900">Pengingat</h2>
-                    <button class="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-lg flex items-center space-x-2 transition-colors">
+                    <button id="openModal" class="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-lg flex items-center space-x-2 transition-colors">
                         <i class="fas fa-plus text-sm"></i>
                         <span>Tambah Pengingat</span>
                     </button>
                 </div>
 
-                <!-- Reminders Content Area -->
                 <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
-                    <div class="text-center py-12">
-                        <div class="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                            <i class="fas fa-bell text-gray-400 text-2xl"></i>
+                    @if ($reminders->isEmpty())
+                        <div class="text-center py-12">
+                            <div class="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                                <i class="fas fa-bell text-gray-400 text-2xl"></i>
+                            </div>
+                            <h3 class="text-lg font-medium text-gray-900 mb-2">Belum ada pengingat</h3>
+                            <p class="text-gray-500 mb-4">Mulai dengan menambahkan pengingat pertama Anda</p>
                         </div>
-                        <h3 class="text-lg font-medium text-gray-900 mb-2">Belum ada pengingat</h3>
-                        <p class="text-gray-500 mb-4">Mulai dengan menambahkan pengingat pertama Anda</p>
-                        <button class="bg-indigo-600 hover:bg-indigo-700 text-white px-6 py-2 rounded-lg flex items-center space-x-2 mx-auto transition-colors">
-                            <i class="fas fa-plus text-sm"></i>
-                            <span>Tambah Pengingat Baru</span>
-                        </button>
-                    </div>
+                    @else
+                        <ul class="space-y-4">
+                            @foreach ($reminders as $reminder)
+                                <li class="flex items-center justify-between p-4 border border-gray-200 rounded-lg">
+                                    <div>
+                                        <h4 class="text-md font-medium text-gray-900">{{ $reminder->title }}</h4>
+                                        <p class="text-gray-500 text-sm">{{ $reminder->description }}</p>
+                                        <p class="text-gray-500 text-sm">Tanggal: {{ $reminder->reminder_date }}</p>
+                                    </div>
+                                    <div class="flex space-x-2">
+                                        <button class="text-green-600 hover:text-green-800">
+                                            <i class="fas fa-check"></i>
+                                        </button>
+                                        <button class="text-red-600 hover:text-red-800">
+                                            <i class="fas fa-trash"></i>
+                                        </button>
+                                    </div>
+                                </li>
+                            @endforeach
+                        </ul>
+                    @endif
                 </div>
             </main>
         </div>
     </div>
+
+    <div id="modal" class="fixed inset-0 bg-gray-600 bg-opacity-50 flex items-center justify-center hidden">
+        <div class="bg-white rounded-lg p-6 w-96">
+            <h3 class="text-lg font-semibold text-gray-900 mb-4">Tambah Pengingat Baru</h3>
+            <form action="{{ route('reminders.store') }}" method="POST" class="space-y-4">
+                @csrf
+                <div>
+                    <label for="title" class="block text-sm font-medium text-gray-700">Judul</label>
+                    <input type="text" name="title" id="title" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500" required>
+                </div>
+                <div>
+                    <label for="description" class="block text-sm font-medium text-gray-700">Deskripsi</label>
+                    <textarea name="description" id="description" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500" rows="3"></textarea>
+                </div>
+                <div>
+                    <label for="reminder_date" class="block text-sm font-medium text-gray-700">Tanggal Pengingat</label>
+                    <input type="datetime-local" name="reminder_date" id="reminder_date" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500" required>
+                </div>
+                <div class="flex justify-end space-x-2">
+                    <button type="button" id="closeModal" class="px-4 py-2 text-gray-600 hover:text-gray-900">Batal</button>
+                    <button type="submit" class="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-lg">Simpan</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        document.getElementById('openModal').addEventListener('click', () => {
+            document.getElementById('modal').classList.remove('hidden');
+        });
+
+        document.getElementById('closeModal').addEventListener('click', () => {
+            document.getElementById('modal').classList.add('hidden');
+        });
+
+        document.getElementById('modal').addEventListener('click', (e) => {
+            if (e.target === document.getElementById('modal')) {
+                document.getElementById('modal').classList.add('hidden');
+            }
+        });
+    </script>
 </body>
-</html>
+</html> 
