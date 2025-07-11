@@ -3,6 +3,7 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\ReminderController;
 use App\Http\Controllers\TransactionController;
+use App\Http\Controllers\NoteController;
 
 Route::get('/', function () {
     return view('app');
@@ -19,16 +20,14 @@ Route::get('/finance', [TransactionController::class, 'index'])->name('transacti
 Route::post('/finance', [TransactionController::class, 'store'])->name('transactions.store');
 Route::delete('/finance/{id}', [TransactionController::class, 'destroy'])->name('transactions.destroy');
 
-Route::get('/note', function () {
-    return view('note');
-});
+Route::get('/note', [NoteController::class, 'index'])->name('notes.index');
+Route::post('/note', [NoteController::class, 'store'])->name('notes.store');
+Route::get('/note/{id}/edit', [NoteController::class, 'edit'])->name('notes.edit');
+Route::put('/note/{id}', [NoteController::class, 'update'])->name('notes.update');
+Route::delete('/note/{id}', [NoteController::class, 'destroy'])->name('notes.destroy');
 
 Route::get('/recomendation', function () {
     return view('recomendation');
-});
-
-Route::get('/journal', function () {
-    return view('journal');
 });
 
 Route::get('/chat', function () {

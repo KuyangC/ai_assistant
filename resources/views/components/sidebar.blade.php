@@ -44,7 +44,7 @@
                 <a href="/note"
                     class="flex items-center space-x-3 px-3 py-2 {{ request()->is('note') ? 'bg-indigo-50 text-indigo-600' : 'text-gray-600 hover:bg-gray-50' }} rounded-lg">
                     <i class="fas fa-sticky-note text-sm"></i>
-                    <span>Catatan</span>
+                    <span>Note</span>
                 </a>
             </li>
             <li>
@@ -52,13 +52,6 @@
                     class="flex items-center space-x-3 px-3 py-2 {{ request()->is('recomendation') ? 'bg-indigo-50 text-indigo-600' : 'text-gray-600 hover:bg-gray-50' }} rounded-lg">
                     <i class="fas fa-star text-sm"></i>
                     <span>Rekomendasi</span>
-                </a>
-            </li>
-            <li>
-                <a href="/journal"
-                    class="flex items-center space-x-3 px-3 py-2 {{ request()->is('journal') ? 'bg-indigo-50 text-indigo-600' : 'text-gray-600 hover:bg-gray-50' }} rounded-lg">
-                    <i class="fas fa-book text-sm"></i>
-                    <span>Jurnal</span>
                 </a>
             </li>
             <li>
