@@ -36,7 +36,7 @@
                         <div class="flex items-center justify-between">
                             <div>
                                 <p class="text-2xl font-bold text-gray-900">3</p>
-                                <p class="text-gray-600 text-sm mt-1">Pengingan</p>
+                                <p class="text-gray-600 text-sm mt-1">Pengingat</p>
                             </div>
                             <div class="w-10 h-10 bg-indigo-100 rounded-lg flex items-center justify-center">
                                 <i class="fas fa-bell text-indigo-600"></i>
