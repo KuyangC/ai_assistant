@@ -1,6 +1,7 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\TaskController;
 use App\Http\Controllers\ReminderController;
 use App\Http\Controllers\TransactionController;
 use App\Http\Controllers\NoteController;
@@ -9,9 +10,13 @@ Route::get('/', function () {
     return view('app');
 });
 
-Route::get('/task', function () {
-    return view('task');
-});
+Route::get('/task', [TaskController::class, 'index'])->name('tasks.index');
+Route::post('/task', [TaskController::class, 'store'])->name('tasks.store');
+Route::get('/task/{task}/edit', [TaskController::class, 'edit'])->name('tasks.edit');
+Route::put('/task/{task}', [TaskController::class, 'update'])->name('tasks.update');
+Route::delete('/task/{task}', [TaskController::class, 'destroy'])->name('tasks.destroy');
+Route::put('/tasks/{task}/toggle', [TaskController::class, 'toggle'])->name('tasks.toggle');
+
 
 Route::get('/reminder', [ReminderController::class, 'index'])->name('reminders.index');
 Route::post('/reminder', [ReminderController::class, 'store'])->name('reminders.store');
