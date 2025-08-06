@@ -22,7 +22,7 @@
                     <div class="bg-white p-4 rounded-xl shadow-sm border border-gray-200">
                         <div class="flex items-center justify-between">
                             <div>
-                                <p class="text-2xl font-bold text-gray-900">5</p>
+                                <p class="text-2xl font-bold text-gray-900">{{ $taskCount ?? 0 }}</p>
                                 <p class="text-gray-600 text-sm mt-1">Tugas Hari Ini</p>
                             </div>
                             <div class="w-10 h-10 bg-indigo-100 rounded-lg flex items-center justify-center">
@@ -35,7 +35,7 @@
                     <div class="bg-white p-4 rounded-xl shadow-sm border border-gray-200">
                         <div class="flex items-center justify-between">
                             <div>
-                                <p class="text-2xl font-bold text-gray-900">3</p>
+                                <p class="text-2xl font-bold text-gray-900">{{ $reminderCount ?? 0 }}</p>
                                 <p class="text-gray-600 text-sm mt-1">Pengingat</p>
                             </div>
                             <div class="w-10 h-10 bg-indigo-100 rounded-lg flex items-center justify-center">
@@ -48,8 +48,8 @@
                     <div class="bg-white p-4 rounded-xl shadow-sm border border-gray-200">
                         <div class="flex items-center justify-between">
                             <div>
-                                <p class="text-2xl font-bold text-gray-900">Rp 1.250.000</p>
-                                <p class="text-gray-600 text-sm mt-1">Anggaran Bulanan</p>
+                                <p class="text-2xl font-bold text-gray-900">{{ $transactionCount ?? 0 }}</p>
+                                <p class="text-gray-600 text-sm mt-1">Transaksi</p>
                             </div>
                             <div class="w-10 h-10 bg-indigo-100 rounded-lg flex items-center justify-center">
                                 <i class="fas fa-wallet text-indigo-600"></i>
@@ -61,7 +61,7 @@
                     <div class="bg-white p-4 rounded-xl shadow-sm border border-gray-200">
                         <div class="flex items-center justify-between">
                             <div>
-                                <p class="text-2xl font-bold text-gray-900">12</p>
+                                <p class="text-2xl font-bold text-gray-900">{{ $noteCount ?? 0 }}</p>
                                 <p class="text-gray-600 text-sm mt-1">Catatan</p>
                             </div>
                             <div class="w-10 h-10 bg-indigo-100 rounded-lg flex items-center justify-center">
@@ -107,38 +107,21 @@
                     <h2 class="text-lg font-semibold text-gray-900 mb-3">Aktivitas Terbaru</h2>
                     <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-4">
                         <div class="space-y-4">
-                            <!-- Activity 1 -->
-                            <div class="flex items-start space-x-3">
-                                <div class="w-6 h-6 bg-green-100 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
-                                    <i class="fas fa-check text-green-600 text-xs"></i>
+                            @forelse($recentActivities as $activity)
+                                <div class="flex items-start space-x-3">
+                                    <div class="w-6 h-6 bg-green-100 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
+                                        <i class="{{ $activity->icon }} text-green-600 text-xs"></i>
+                                    </div>
+                                    <div class="flex-1">
+                                        <p class="text-gray-900 text-sm">{{ $activity->description }}</p>
+                                        <p class="text-gray-500 text-xs mt-1">{{ $activity->created_at->diffForHumans() }}</p>
+                                    </div>
                                 </div>
-                                <div class="flex-1">
-                                    <p class="text-gray-900 text-sm">Tugas selesai: <span class="font-medium">"Review proposal proyek"</span></p>
-                                    <p class="text-gray-500 text-xs mt-1">2 jam yang lalu</p>
+                            @empty
+                                <div class="text-center py-4">
+                                    <p class="text-gray-500 text-sm">Belum ada aktivitas</p>
                                 </div>
-                            </div>
-
-                            <!-- Activity 2 -->
-                            <div class="flex items-start space-x-3">
-                                <div class="w-6 h-6 bg-green-100 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
-                                    <i class="fas fa-bell text-green-600 text-xs"></i>
-                                </div>
-                                <div class="flex-1">
-                                    <p class="text-gray-900 text-sm">Pengingan diset: <span class="font-medium">"Rapat tim jam 3 sore"</span></p>
-                                    <p class="text-gray-500 text-xs mt-1">4 jam yang lalu</p>
-                                </div>
-                            </div>
-
-                            <!-- Activity 3 -->
-                            <div class="flex items-start space-x-3">
-                                <div class="w-6 h-6 bg-green-100 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
-                                    <i class="fas fa-plus text-green-600 text-xs"></i>
-                                </div>
-                                <div class="flex-1">
-                                    <p class="text-gray-900 text-sm">Pengeluaran ditambah: <span class="font-medium">"Makan siang - Rp 15.000"</span></p>
-                                    <p class="text-gray-500 text-xs mt-1">6 jam yang lalu</p>
-                                </div>
-                            </div>
+                            @endforelse
                         </div>
                     </div>
                 </div>

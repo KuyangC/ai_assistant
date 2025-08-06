@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Transaction;
+use App\Models\Activity;
 use Illuminate\Http\Request;
 
 class TransactionController extends Controller
@@ -26,12 +27,21 @@ class TransactionController extends Controller
             'date' => 'required|date',
         ]);
 
-        Transaction::create([
+        $transaction = Transaction::create([
             'description' => $request->description,
             'amount' => $request->amount,
             'type' => $request->type,
             'date' => $request->date,
         ]);
+
+        // Log activity
+        $typeText = $request->type === 'income' ? 'Pemasukan' : 'Pengeluaran';
+        Activity::log(
+            'transaction',
+            'created',
+            "{$typeText} ditambah: \"{$request->description} - Rp " . number_format($request->amount, 0, ',', '.') . "\"",
+            'fas fa-plus'
+        );
 
         return redirect()->route('transactions.index')->with('success', 'Transaksi berhasil ditambahkan!');
     }
@@ -39,6 +49,16 @@ class TransactionController extends Controller
     public function destroy($id)
     {
         $transaction = Transaction::findOrFail($id);
+        
+        // Log activity before deletion
+        $typeText = $transaction->type === 'income' ? 'Pemasukan' : 'Pengeluaran';
+        Activity::log(
+            'transaction',
+            'deleted',
+            "{$typeText} dihapus: \"{$transaction->description} - Rp " . number_format($transaction->amount, 0, ',', '.') . "\"",
+            'fas fa-trash'
+        );
+
         $transaction->delete();
 
         return redirect()->route('transactions.index')->with('success', 'Transaksi berhasil dihapus!');
