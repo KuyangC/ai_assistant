@@ -232,7 +232,7 @@
 
         async function openEditModal(taskId) {
             try {
-                const response = await fetch(`/tasks/${taskId}/edit`);
+                const response = await fetch(`/task/${taskId}/edit`);
                 const task = await response.json();
                 openTaskModal(task);
             } catch (error) {
@@ -260,6 +260,8 @@
 
                 if (response.ok) {
                     window.location.reload();
+                } else {
+                    console.error('Toggle failed:', response.status);
                 }
             } catch (error) {
                 console.error('Error:', error);
@@ -269,15 +271,23 @@
         async function confirmDelete(taskId) {
             if (confirm('Apakah Anda yakin ingin menghapus tugas ini?')) {
                 try {
-                    const response = await fetch(`/tasks/${taskId}`, {
+                    console.log('Deleting task:', taskId);
+                    const response = await fetch(`/task/${taskId}`, {
                         method: 'DELETE',
                         headers: {
-                            'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                            'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                            'Content-Type': 'application/json'
                         }
                     });
 
+                    console.log('Response status:', response.status);
                     if (response.ok) {
+                        console.log('Task deleted successfully');
                         window.location.reload();
+                    } else {
+                        console.error('Delete failed:', response.status);
+                        const errorText = await response.text();
+                        console.error('Error response:', errorText);
                     }
                 } catch (error) {
                     console.error('Error:', error);
