@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Task;
+use App\Models\Activity;
 use Illuminate\Http\Request;
 
 class TaskController extends Controller
@@ -30,15 +31,16 @@ class TaskController extends Controller
             'priority' => 'nullable|in:low,medium,high',
         ]);
 
-        Task::create($validated);
+        $task = Task::create($validated);
+
+        // Log activity
+        Activity::log('task', 'created', "Task '{$task->title}' telah dibuat", 'fas fa-tasks');
 
         return redirect()->route('tasks.index')->with('success', 'Task created!');
     }
 
     public function update(Request $request, Task $task)
     {
-        $this->authorize('update', $task);
-
         $validated = $request->validate([
             'title' => 'sometimes|required|string|max:255',
             'description' => 'nullable|string',
@@ -49,26 +51,41 @@ class TaskController extends Controller
 
         $task->update($validated);
 
+        // Log activity
+        $action = isset($validated['completed']) ? 'completed' : 'updated';
+        $description = isset($validated['completed']) 
+            ? "Task '{$task->title}' telah " . ($validated['completed'] ? 'diselesaikan' : 'dibuka kembali')
+            : "Task '{$task->title}' telah diperbarui";
+        
+        Activity::log('task', $action, $description, 'fas fa-tasks');
+
         return redirect()->route('tasks.index')->with('success', 'Task updated successfully!');
     }
 
     public function edit(Task $task)
     {
-        $this->authorize('update', $task);
         return response()->json($task);
     }
 
     public function destroy(Task $task)
     {
-        $this->authorize('delete', $task);
+        $taskTitle = $task->title;
         $task->delete();
+        
+        // Log activity
+        Activity::log('task', 'deleted', "Task '{$taskTitle}' telah dihapus", 'fas fa-tasks');
+        
         return redirect()->route('tasks.index')->with('success', 'Task deleted successfully!');
     }
 
     public function toggle(Request $request, Task $task)
     {
-        $this->authorize('update', $task);
         $task->update(['completed' => $request->completed]);
+        
+        // Log activity
+        $status = $request->completed ? 'diselesaikan' : 'dibuka kembali';
+        Activity::log('task', 'toggled', "Task '{$task->title}' telah {$status}", 'fas fa-tasks');
+        
         return response()->json(['success' => true]);
     }
 }

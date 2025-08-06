@@ -28,9 +28,13 @@ Route::middleware('auth')->group(function () {
 
     Route::get('/reminder', [ReminderController::class, 'index'])->name('reminders.index');
     Route::post('/reminder', [ReminderController::class, 'store'])->name('reminders.store');
+    Route::put('/reminder/{id}', [ReminderController::class, 'update'])->name('reminders.update');
+    Route::delete('/reminder/{id}', [ReminderController::class, 'destroy'])->name('reminders.destroy');
+    Route::put('/reminder/{id}/toggle', [ReminderController::class, 'toggle'])->name('reminders.toggle');
 
     Route::get('/finance', [TransactionController::class, 'index'])->name('transactions.index');
     Route::post('/finance', [TransactionController::class, 'store'])->name('transactions.store');
+    Route::put('/finance/{id}', [TransactionController::class, 'update'])->name('transactions.update');
     Route::delete('/finance/{id}', [TransactionController::class, 'destroy'])->name('transactions.destroy');
 
     Route::get('/note', [NoteController::class, 'index'])->name('notes.index');

@@ -45,6 +45,35 @@ class TransactionController extends Controller
 
         return redirect()->route('transactions.index')->with('success', 'Transaksi berhasil ditambahkan!');
     }
+
+    public function update(Request $request, $id)
+    {
+        $request->validate([
+            'description' => 'required|string|max:255',
+            'amount' => 'required|numeric|min:0',
+            'type' => 'required|in:income,expense',
+            'date' => 'required|date',
+        ]);
+
+        $transaction = Transaction::findOrFail($id);
+        $transaction->update([
+            'description' => $request->description,
+            'amount' => $request->amount,
+            'type' => $request->type,
+            'date' => $request->date,
+        ]);
+
+        // Log activity
+        $typeText = $request->type === 'income' ? 'Pemasukan' : 'Pengeluaran';
+        Activity::log(
+            'transaction',
+            'updated',
+            "{$typeText} diperbarui: \"{$request->description} - Rp " . number_format($request->amount, 0, ',', '.') . "\"",
+            'fas fa-edit'
+        );
+
+        return redirect()->route('transactions.index')->with('success', 'Transaksi berhasil diperbarui!');
+    }
     
     public function destroy($id)
     {

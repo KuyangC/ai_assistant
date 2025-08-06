@@ -120,9 +120,41 @@
                             @empty
                                 <div class="text-center py-4">
                                     <p class="text-gray-500 text-sm">Belum ada aktivitas</p>
+                                    <p class="text-gray-400 text-xs mt-1">Coba tambahkan task, catatan, atau transaksi untuk melihat aktivitas di sini</p>
                                 </div>
                             @endforelse
                         </div>
+                        
+                        <!-- Pagination -->
+                        @if($recentActivities->hasPages())
+                            <div class="mt-4 pt-4 border-t border-gray-200">
+                                <div class="flex items-center justify-center space-x-2">
+                                    @if($recentActivities->onFirstPage())
+                                        <span class="px-3 py-1 text-sm text-gray-400 bg-gray-100 rounded-md cursor-not-allowed">
+                                            <i class="fas fa-chevron-left mr-1"></i>Sebelumnya
+                                        </span>
+                                    @else
+                                        <a href="{{ $recentActivities->previousPageUrl() }}" class="px-3 py-1 text-sm text-indigo-600 bg-white border border-indigo-200 rounded-md hover:bg-indigo-50 transition-colors">
+                                            <i class="fas fa-chevron-left mr-1"></i>Sebelumnya
+                                        </a>
+                                    @endif
+                                    
+                                    <span class="text-sm text-gray-600">
+                                        Halaman {{ $recentActivities->currentPage() }} dari {{ $recentActivities->lastPage() }}
+                                    </span>
+                                    
+                                    @if($recentActivities->hasMorePages())
+                                        <a href="{{ $recentActivities->nextPageUrl() }}" class="px-3 py-1 text-sm text-indigo-600 bg-white border border-indigo-200 rounded-md hover:bg-indigo-50 transition-colors">
+                                            Selanjutnya<i class="fas fa-chevron-right ml-1"></i>
+                                        </a>
+                                    @else
+                                        <span class="px-3 py-1 text-sm text-gray-400 bg-gray-100 rounded-md cursor-not-allowed">
+                                            Selanjutnya<i class="fas fa-chevron-right ml-1"></i>
+                                        </span>
+                                    @endif
+                                </div>
+                            </div>
+                        @endif
                     </div>
                 </div>
             </main>

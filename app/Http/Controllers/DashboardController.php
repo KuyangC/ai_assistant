@@ -18,7 +18,7 @@ class DashboardController extends Controller
             'reminderCount' => Reminder::count(),
             'transactionCount' => Transaction::count(),
             'noteCount' => Note::count(),
-            'recentActivities' => Activity::latest()->take(5)->get(),
+            'recentActivities' => Activity::latest()->paginate(5), // 5 activities per page
         ];
 
         return view('app', $data);

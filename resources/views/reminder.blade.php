@@ -66,10 +66,10 @@
                                         <p class="text-gray-500 text-sm">Tanggal: {{ $reminder->reminder_date }}</p>
                                     </div>
                                     <div class="flex space-x-2">
-                                        <button class="text-green-600 hover:text-green-800">
+                                        <button onclick="toggleReminder({{ $reminder->id }})" class="text-green-600 hover:text-green-800">
                                             <i class="fas fa-check"></i>
                                         </button>
-                                        <button class="text-red-600 hover:text-red-800">
+                                        <button onclick="confirmDeleteReminder({{ $reminder->id }})" class="text-red-600 hover:text-red-800">
                                             <i class="fas fa-trash"></i>
                                         </button>
                                     </div>
@@ -82,10 +82,20 @@
         </div>
     </div>
 
+    <!-- Notification Toast -->
+    <div id="notification" class="fixed top-4 right-4 z-50 hidden">
+        <div class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded-lg shadow-lg max-w-sm">
+            <div class="flex items-center">
+                <i class="fas fa-check-circle mr-2 text-green-600"></i>
+                <span id="notificationText" class="text-sm font-medium"></span>
+            </div>
+        </div>
+    </div>
+
     <div id="modal" class="fixed inset-0 bg-gray-600 bg-opacity-50 flex items-center justify-center hidden">
         <div class="bg-white rounded-lg p-6 w-96">
             <h3 class="text-lg font-semibold text-gray-900 mb-4">Tambah Pengingat Baru</h3>
-            <form action="{{ route('reminders.store') }}" method="POST" class="space-y-4">
+            <form id="reminderForm" action="{{ route('reminders.store') }}" method="POST" class="space-y-4">
                 @csrf
                 <div>
                     <label for="title" class="block text-sm font-medium text-gray-700">Judul</label>
@@ -121,6 +131,116 @@
                 document.getElementById('modal').classList.add('hidden');
             }
         });
+
+        // Handle form submission
+        document.getElementById('reminderForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const formData = new FormData(this);
+            
+            fetch(this.action, {
+                method: 'POST',
+                body: formData,
+                headers: {
+                    'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                }
+            })
+            .then(response => {
+                if (response.ok) {
+                    showNotification('Pengingat berhasil ditambahkan!', 'success');
+                    document.getElementById('modal').classList.add('hidden');
+                    setTimeout(() => {
+                        window.location.reload();
+                    }, 1000);
+                } else {
+                    showNotification('Gagal menambahkan pengingat', 'error');
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                showNotification('Terjadi kesalahan saat menambahkan pengingat', 'error');
+            });
+        });
+
+        function showNotification(message, type = 'success') {
+            const notification = document.getElementById('notification');
+            const notificationText = document.getElementById('notificationText');
+            const notificationDiv = notification.querySelector('div');
+            const icon = notification.querySelector('i');
+            
+            notificationText.textContent = message;
+            
+            // Set styling based on type
+            if (type === 'success') {
+                notificationDiv.className = 'bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded-lg shadow-lg max-w-sm';
+                icon.className = 'fas fa-check-circle mr-2 text-green-600';
+            } else if (type === 'error') {
+                notificationDiv.className = 'bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded-lg shadow-lg max-w-sm';
+                icon.className = 'fas fa-exclamation-circle mr-2 text-red-600';
+            }
+            
+            notification.classList.remove('hidden');
+            
+            setTimeout(() => {
+                notification.classList.add('hidden');
+            }, 3000);
+        }
+
+        async function confirmDeleteReminder(reminderId) {
+            if (confirm('Apakah Anda yakin ingin menghapus pengingat ini?')) {
+                try {
+                    console.log('Deleting reminder:', reminderId);
+                    const response = await fetch(`/reminder/${reminderId}`, {
+                        method: 'DELETE',
+                        headers: {
+                            'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                            'Content-Type': 'application/json'
+                        }
+                    });
+
+                    console.log('Response status:', response.status);
+                    if (response.ok) {
+                        console.log('Reminder deleted successfully');
+                        showNotification('Pengingat berhasil dihapus!', 'success');
+                        setTimeout(() => {
+                            window.location.reload();
+                        }, 1000);
+                    } else {
+                        console.error('Delete failed:', response.status);
+                        const errorText = await response.text();
+                        console.error('Error response:', errorText);
+                        showNotification('Gagal menghapus pengingat', 'error');
+                    }
+                } catch (error) {
+                    console.error('Error:', error);
+                    showNotification('Terjadi kesalahan saat menghapus pengingat', 'error');
+                }
+            }
+        }
+
+        async function toggleReminder(reminderId) {
+            try {
+                const response = await fetch(`/reminder/${reminderId}/toggle`, {
+                    method: 'PUT',
+                    headers: {
+                        'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                        'Content-Type': 'application/json'
+                    }
+                });
+
+                if (response.ok) {
+                    showNotification('Status pengingat berhasil diubah!', 'success');
+                    setTimeout(() => {
+                        window.location.reload();
+                    }, 1000);
+                } else {
+                    showNotification('Gagal mengubah status pengingat', 'error');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                showNotification('Terjadi kesalahan saat mengubah status pengingat', 'error');
+            }
+        }
     </script>
 </body>
 </html> 

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Note;
+use App\Models\Activity;
 use Illuminate\Http\Request;
 
 class NoteController extends Controller
@@ -24,6 +25,9 @@ class NoteController extends Controller
             'title' => $request->title,
             'content' => $request->content,
         ]);
+
+        // Log activity
+        Activity::log('note', 'created', "Catatan '{$note->title}' telah dibuat", 'fas fa-sticky-note');
 
         return redirect()->route('notes.index')->with('success', 'Catatan berhasil ditambahkan!');
     }
@@ -58,6 +62,9 @@ class NoteController extends Controller
             'content' => $request->content,
         ]);
 
+        // Log activity
+        Activity::log('note', 'updated', "Catatan '{$note->title}' telah diperbarui", 'fas fa-sticky-note');
+
         return redirect()->route('notes.index')->with('success', 'Catatan berhasil diperbarui!');
     }
 
@@ -68,7 +75,12 @@ class NoteController extends Controller
             return redirect()->route('notes.index')->with('error', 'Catatan tidak ditemukan');
         }
 
+        $noteTitle = $note->title;
         $note->delete();
+        
+        // Log activity
+        Activity::log('note', 'deleted', "Catatan '{$noteTitle}' telah dihapus", 'fas fa-sticky-note');
+        
         return redirect()->route('notes.index')->with('success', 'Catatan berhasil dihapus!');
     }
 }
